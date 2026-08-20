@@ -22,8 +22,17 @@ PV = "${LINUX_VERSION}+git${SRCPV}"
 SRC_URI = "${REPO};branch=${BRANCH};protocol=https"
 SRC_URI:append:sparrow-hawk = " \
     file://sparrow_hawk.cfg \
-    file://0001-arm64-dts-renesas-sparrow-hawk-Enable-I2C3-I2C4.patch \
+    file://sparrow-hawk-enable-i2c3-i2c4.dtsi;subdir=git/arch/arm64/boot/dts/renesas/ \
     file://0002-HACK-drivers-gpu-drm-drm_file-Ingnore-flag-checking.patch \
+"
+# Add support Waveshare touchpanel
+SRC_URI:append:sparrow-hawk = " \
+    file://waveshare_touch.cfg \
+    file://0001-drm-panel-Add-panel-driver-for-Waveshare-DSI-touchsc.patch \
+    file://0002-drm-panel-Added-waveshare-13.3inch-panel.patch \
+    file://0003-drm-panel-Added-waveshare-7.0inch-h-dsi-screen-suppo.patch \
+    file://0004-input-Add-support-for-no-irq-to-ili210x-driver.patch \
+    file://0005-arm64-dts-renesas-r8a779g3-Add-waveshare-13.3-DSI-FH.patch \
 "
 S = "${WORKDIR}/git"
 
@@ -38,11 +47,15 @@ KERNEL_DEVICETREE:append:sparrow-hawk = " \
     renesas/r8a779g3-sparrow-hawk-fan-argon40.dtbo \
     renesas/r8a779g3-sparrow-hawk-rpi-display-2-5in.dtbo \
     renesas/r8a779g3-sparrow-hawk-rpi-display-2-7in.dtbo \
-    renesas/r8a779g3-sparrow-hawk-ws-display-13in.dtbo \
-    renesas/r8a779g3-sparrow-hawk-olimex-dsi-hdmi.dtbo \
 "
-
+KERNEL_DEVICETREE:append:sparrow-hawk = " \
+    renesas/r8a779g3-sparrow-hawk-dsi-waveshare-panel.dtbo \
+"
 BBCLASSEXTEND ?= ""
+
+do_compile:prepend:sparrow-hawk () {
+    echo '#include "sparrow-hawk-enable-i2c3-i2c4.dtsi"' >>  ${S}/arch/arm64/boot/dts/renesas/r8a779g3-sparrow-hawk.dts
+}
 
 do_compile_kernelmodules:append () {
     if (grep -q -i -e '^CONFIG_MODULES=y$' ${B}/.config); then

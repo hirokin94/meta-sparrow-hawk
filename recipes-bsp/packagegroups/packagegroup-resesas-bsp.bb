@@ -39,8 +39,4 @@ RDEPENDS:packagegroup-renesas-bsp-tools = " \
 RDEPENDS:packagegroup-renesas-bsp-demo = " \
     python3-pip \
     python3-gpiod \
-    sqlite3 \
-    python3-numpy \
-    python3-sqlite3 \
-    opencv \
 "
